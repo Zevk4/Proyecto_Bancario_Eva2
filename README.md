@@ -57,7 +57,8 @@ Proyecto_Bancario_Eva2/
 ├── notebooks/  
 │   ├── 01_exploratory_analysis.ipynb    # Análisis exploratorio de datos  
 │   ├── 02_supervised_modeling.ipynb     # Modelamiento supervisado y pipeline  
-│   └── 03_model_evaluation.ipynb        # Evaluación comparativa de modelos  
+│   └── 03_model_evaluation.ipynb        # Evaluación comparativa de modelos 
+│   └──04_hyperparameter_optimization.ipynb 
 ├── src/  
 │   ├── data_preprocessing.py             # Funciones de preprocesamiento y feature engineering  
 │   └── model_evaluation.py              # Funciones de evaluación de modelos  
