@@ -20,3 +20,5 @@ def evaluar_modelo_entrenado(modelo: BaseEstimator, X_test: pd.DataFrame, y_test
         "f1": f1_score(y_test, y_pred, zero_division=0),
         "roc_auc": roc_auc_score(y_test, y_prob)
     }
+
+
