@@ -28,27 +28,32 @@ def corregir_signos_negativos(X: pd.DataFrame, columnas: list = None):
     return X_copy
 
 # 3. Función para la creación de variables (Feature Engineering)
-def ingenieria_caracteristicas(X: pd.DataFrame, col_ingreso='ingreso_mensual', 
+def ingenieria_caracteristicas(X: pd.DataFrame, col_ingreso='ingreso_mensual',
                                col_gasto='gasto_mensual', col_deuda='deuda_total',
                                col_antiguedad='antiguedad_meses', col_frecuencia='frecuencia_compra',
-                               col_ultima_compra='ultima_compra_dias'):
+                               col_ultima_compra='ultima_compra_dias', col_region='region', 
+                               col_uso_app='uso_app'):
     """
-    Genera nuevas características financieras y de comportamiento.
-    Implementa validación de columnas y Epsilon para estabilidad numérica.
+    Genera nuevas características financieras, de comportamiento e interacciones categóricas.
     """
     X_copy = X.copy()
-    eps = 1e-6  # Constante para evitar división por cero
-    
-    # Variables Financieras
+    eps = 1e-6  # Constante para evitar división por cero (0.000001)
+
+    # 1. Variables Financieras
+    # Verificamos si las columnas existen en el dataset actual antes de operar
     if all(col in X_copy.columns for col in [col_deuda, col_ingreso, col_gasto]):
         X_copy['ratio_deuda'] = X_copy[col_deuda] / (X_copy[col_ingreso] + eps)
         X_copy['ratio_gasto'] = X_copy[col_gasto] / (X_copy[col_ingreso] + eps)
-    
-    # Variables de Comportamiento
+
+    # 2. Variables de Comportamiento
     if all(col in X_copy.columns for col in [col_antiguedad, col_frecuencia, col_ultima_compra]):
         X_copy['indice_lealtad'] = X_copy[col_antiguedad] / (X_copy[col_frecuencia] + eps)
         X_copy['riesgo_por_inactividad'] = X_copy[col_ultima_compra] / (X_copy[col_antiguedad] + eps)
-        
+
+    # 3. Interacción Categórica: Región por Uso de la App
+    if all(col in X_copy.columns for col in [col_region, col_uso_app]):
+        X_copy['region_uso_app'] = X_copy[col_region].astype(str) + '_' + X_copy[col_uso_app].astype(str)
+
     return X_copy
 
 # 4. Clase Winsorizer para aplicar un recorte a los atípicos extremos
