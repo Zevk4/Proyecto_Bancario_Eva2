@@ -82,3 +82,50 @@ class Winsorizer(BaseEstimator, TransformerMixin):
             return np.array(self.columns_)
         else:
             return np.array(input_features)
+        
+#  5. Convierte un array en un DataFrame
+class DataFrameConverter(BaseEstimator, TransformerMixin):
+    """Clase optimizada para conservar nombres de columnas, compatible con GridSearchCV."""
+    def __init__(self, preprocessor=None):
+        self.preprocessor = preprocessor
+        self.feature_names_ = None
+
+    def fit(self, X, y=None):
+        # Si el paso anterior ya entrega un DataFrame, extraemos las columnas directamente
+        if isinstance(X, pd.DataFrame):
+            self.feature_names_ = X.columns
+        else:
+            # Fallback de seguridad para ejecuciones directas sin configuración de salida
+            if self.preprocessor is not None:
+                self.feature_names_ = self.preprocessor.get_feature_names_out()
+            else:
+                self.feature_names_ = [f"col_{i}" for i in range(X.shape[1])]
+        return self
+
+    def transform(self, X):
+        if isinstance(X, pd.DataFrame):
+            return X
+        return pd.DataFrame(X, columns=self.feature_names_)
+    
+# 6. Eliminación de variables correlacionadas
+class CorrelationFilter(BaseEstimator, TransformerMixin):
+    """Clase genérica para mitigar multicolinealidad eliminando variables con corr > threshold."""
+    def __init__(self, threshold=0.9):
+        self.threshold = threshold
+        self.columns_to_drop_ = None
+
+    def fit(self, X, y=None):
+        X_df = pd.DataFrame(X)
+        corr_matrix = X_df.corr().abs()
+        upper = corr_matrix.where(
+            np.triu(np.ones(corr_matrix.shape), k=1).astype(bool)
+        )
+        self.columns_to_drop_ = [
+            col for col in upper.columns if any(upper[col] > self.threshold)
+        ]
+        return self
+
+    def transform(self, X):
+        X_df = pd.DataFrame(X)
+        X_filtered = X_df.drop(columns=self.columns_to_drop_, errors="ignore")
+        return X_filtered.values
