@@ -52,6 +52,8 @@ Proyecto_Bancario_Eva2/
 ├── data/  
 │   └── data_sucia/  
 │       └── dataset_clientes.csv          # Dataset de clientes (datos crudos)  
+├── docs/
+│   └── Entrega_2_informe_Tecnico.pdf  
 ├── notebooks/  
 │   ├── 01_exploratory_analysis.ipynb    # Análisis exploratorio de datos  
 │   ├── 02_supervised_modeling.ipynb     # Modelamiento supervisado y pipeline  
